@@ -71,14 +71,18 @@ def evaluate_algorithm(dataset, algorithm, split, *args):
         row_copy = list(row)
         row_copy[-1] = None
         test_set.append(row_copy)
-    for row in test:
+    for row in train:
         row_copy = list(row)
         row_copy[-1] = None
         train_set.append(row_copy)
     predicted = algorithm(train, test_set, *args)
+    train_predicted = algorithm(dataset, train_set, *args)
     actual = [row[-1] for row in test]
+    train_actual = [row[-1] for row in train]
     rmse = rmse_metric(actual, predicted)
-    return rmse
+    train_rmse = rmse_metric(train_actual, train_predicted)
+    #print("train rmse: " + str(train_rmse) + " test rmse: " + str(rmse))
+    return train_rmse/rmse
 
 #Simple linear regression algorithm
 def simple_linear_regression(train, test):
@@ -100,4 +104,5 @@ for i in range(len(dataset[0])):
 # evaluate algorithm
 split = 0.6
 rmse = evaluate_algorithm(dataset, simple_linear_regression, split)
-print('RMSE: %.3f' % (rmse))
+print('dividing RMSE(training)/RMSE(testng): %.3f' % (rmse))
+
